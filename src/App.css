@@ -18,3 +18,7 @@ body{
   align-items: center;
   margin-bottom: 20px;
 }
+.app_stats {
+  display: flex;
+  justify-content: space-between;
+}
