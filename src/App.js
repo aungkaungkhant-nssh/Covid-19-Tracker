@@ -1,13 +1,14 @@
 import logo from './logo.svg';
 import './App.css';
-import { FormControl, MenuItem,Select } from '@material-ui/core';
+import { CardContent, FormControl, MenuItem,Select } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import InfoBox from './components/InfoBox';
-
+import Table from './components/Table'
 function App() {
   const [countries,setCountries]=useState([]);
   const [country,setCountry]=useState("worldwide");
   const [countryInfo,setCountryInfo]=useState({});
+  const [tabledata,setTableData]=useState([]);
   const getCountries=async()=>{
       fetch("https://disease.sh/v3/covid-19/countries")
       .then((response)=>response.json())
@@ -15,7 +16,8 @@ function App() {
           const countries=data.map((country)=>{
               return {name:country.country,value:country.countryInfo.iso2};
           })
-          setCountries(countries)
+          setCountries(countries);
+          setTableData(data);
       })
       .catch((error)=>console.log(error))
   }
@@ -64,7 +66,12 @@ function App() {
               </div>
         </div>
         <div className="app_right">
-          Covid 19 lists
+            <CardContent>
+                <div className="app_information">
+                      <h3>Live Cases By Countries</h3>
+                      <Table countries={tabledata}/>
+                </div>
+            </CardContent>
         </div>
     </div>
   );
