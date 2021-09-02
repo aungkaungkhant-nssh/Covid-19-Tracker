@@ -5,12 +5,13 @@ import { useEffect, useState } from 'react';
 import InfoBox from './components/InfoBox';
 import Table from './components/Table'
 import {sortData} from './util'
+import LineGraph from './components/LineGraph';
 function App() {
   const [countries,setCountries]=useState([]);
   const [country,setCountry]=useState("worldwide");
   const [countryInfo,setCountryInfo]=useState({});
   const [tabledata,setTableData]=useState([]);
-
+  const [casesType,setCasesType]=useState("cases")
   const getCountries=async()=>{
       fetch("https://disease.sh/v3/covid-19/countries")
       .then((response)=>response.json())
@@ -73,6 +74,8 @@ function App() {
                 <div className="app_information">
                       <h3>Live Cases By Countries</h3>
                       <Table countries={tabledata}/>
+                      <h3>World News {casesType}</h3>
+                      <LineGraph casesType={casesType}/>
                 </div>
             </CardContent>
         </div>
