@@ -5,13 +5,19 @@ import { useEffect, useState } from 'react';
 import InfoBox from './components/InfoBox';
 import Table from './components/Table'
 import {sortData} from './util'
-import LineGraph from './components/LineGraph';
+import LineGraph from './components/LineGraph'
+import Map from './components/Map'
+import "leaflet/dist/leaflet.css";
+// import "leaflet/dist/leaflet.css";
 function App() {
   const [countries,setCountries]=useState([]);
   const [country,setCountry]=useState("worldwide");
+  const [mapCountries,setMapCountries]=useState([]);
   const [countryInfo,setCountryInfo]=useState({});
   const [tabledata,setTableData]=useState([]);
-  const [casesType,setCasesType]=useState("cases")
+  const [casesType,setCasesType]=useState("cases");
+  const [mapCenter, setMapCenter] = useState({ lat: 34.80746, lng: -40.4796 });
+  const [mapZoom,setMapZoom]=useState(3)
   const getCountries=async()=>{
       fetch("https://disease.sh/v3/covid-19/countries")
       .then((response)=>response.json())
@@ -21,6 +27,7 @@ function App() {
           })
           const sortedData=sortData(data)
           setCountries(countries);
+          setMapCountries(data)
           setTableData(sortedData);
       })
       .catch((error)=>console.log(error))
@@ -30,12 +37,16 @@ function App() {
      const url=countryCode==="worldwide"
               ? "https://disease.sh/v3/covid-19/all"
               : `https://disease.sh/v3/covid-19/countries/${countryCode}`
-      fetch(url)
+      await fetch(url)
       .then((response)=>response.json())
       .then((data)=>{
+        setMapCenter({lat:data.countryInfo.lat,lng:data.countryInfo.long})
+        setMapZoom(9)
          setCountryInfo(data);
-         setCountry(countryCode)
+         setCountry(countryCode);
+       
       });
+
   }
   useEffect(()=>{
       getCountries()
@@ -68,6 +79,8 @@ function App() {
                     ></InfoBox>
                     <InfoBox title="Deaths" cases={countryInfo.todayDeaths} total={countryInfo.deaths}></InfoBox>
               </div>
+
+              <Map countries={mapCountries} casesType={casesType} center={mapCenter} zoom={mapZoom} />
         </div>
         <div className="app_right">
             <CardContent>
