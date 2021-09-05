@@ -8,6 +8,8 @@ import {sortData} from './util'
 import LineGraph from './components/LineGraph'
 import Map from './components/Map'
 import "leaflet/dist/leaflet.css";
+import numeral from 'numeral';
+
 // import "leaflet/dist/leaflet.css";
 function App() {
   const [countries,setCountries]=useState([]);
@@ -40,11 +42,10 @@ function App() {
       await fetch(url)
       .then((response)=>response.json())
       .then((data)=>{
-        setMapCenter({lat:data.countryInfo.lat,lng:data.countryInfo.long})
-        setMapZoom(9)
          setCountryInfo(data);
          setCountry(countryCode);
-       
+         setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+         setMapZoom(9);
       });
 
   }
@@ -73,11 +74,25 @@ function App() {
                 </FormControl>
               </div>
               <div className="app_stats">
-                    <InfoBox title="Coronavirus Cases" cases={countryInfo.todayCases} total={countryInfo.cases}></InfoBox>
-                    <InfoBox title="Recovered" cases={countryInfo.todayRecovered}
-                    total={countryInfo.recovered}
+                    <InfoBox title="Coronavirus Cases" 
+                    active={casesType==="cases"}
+                    isRed
+                    onClick={(e)=>setCasesType("cases")}
+                    cases={`+${numeral(countryInfo.todayCases).format('0.0a')}`} 
+                    total={`+${numeral(countryInfo.cases).format('0.0a')}`} >
+                    </InfoBox>
+                    <InfoBox title="Recovered" 
+                    active={casesType==="recovered"}
+                    isGreen
+                     onClick={(e)=>setCasesType("recovered")}
+                    cases={`+${numeral(countryInfo.todayRecovered).format('0.0a')}`}
+                    total={`+${numeral(countryInfo.recovered).format('0.0a')}`}
                     ></InfoBox>
-                    <InfoBox title="Deaths" cases={countryInfo.todayDeaths} total={countryInfo.deaths}></InfoBox>
+                    <InfoBox title="Deaths"
+                    active={casesType==="deaths"} 
+                    isRed
+                    onClick={(e)=>setCasesType("deaths")}
+                    cases={`+${numeral(countryInfo.todayDeaths).format('0.0a')}`} total={`+${numeral(countryInfo.deaths).format('0.0a')}`}></InfoBox>
               </div>
 
               <Map countries={mapCountries} casesType={casesType} center={mapCenter} zoom={mapZoom} />
